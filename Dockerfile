@@ -1,6 +1,6 @@
 FROM tutum/lamp
 
-MAINTAINER Daniel Romero <infoslack@gmail.com>
+MAINTAINER Tanvir Ahmed (Twitter:@tahmed111)
 
 ENV VERSION 1.9
 
