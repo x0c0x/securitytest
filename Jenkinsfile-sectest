@@ -1,0 +1,30 @@
+pipeline {
+environment {
+registry = “pannly/sectest”
+registryCredential = ‘dockerhub’
+dockerImage = ‘’}
+agent any
+stages {
+stage(‘Cloning Git’) {
+ steps {
+ git ‘https://github.com/x0c0x/securitytest.git'
+ }}
+stage(‘Building image’) {
+ steps{
+ script {
+ dockerImage = docker.build registry + “:$BUILD_NUMBER”}}}
+stage(‘Container Security Scan’) {
+ steps {
+ sh ‘echo “docker.io/pannly/sectest `pwd`/Dockerfile” > anchore_images’
+ anchore name: ‘anchore_images’}}
+stage(‘Deploy Image’) {
+ steps{
+ script {
+ docker.withRegistry( ‘’, registryCredential ) {
+ dockerImage.push()
+ }}}}
+ stage(‘Cleanup’) {
+ steps {
+ sh’’’
+ for i in `cat anchore_images | awk ‘{print $1}’`;do docker rmi $i; done
+ ‘’’}}}}
